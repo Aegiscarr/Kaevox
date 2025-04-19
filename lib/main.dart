@@ -1,9 +1,11 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const KaevoxApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  runApp(KaevoxApp(savedThemeMode: savedThemeMode));
 
   doWhenWindowReady(() {
     final win = appWindow;
@@ -25,39 +27,90 @@ const backgroundEndColor = Color.fromARGB(255, 176, 219, 255);
 
 
 final buttonColors = WindowButtonColors(
-    iconNormal: const Color(0xFF805306),
-    mouseOver: const Color(0xFFF6A00C),
-    mouseDown: const Color(0xFF805306),
-    iconMouseOver: const Color(0xFF805306),
-    iconMouseDown: const Color(0xFFFFD500));
+    iconNormal: const Color.fromARGB(255, 6, 79, 128),
+    mouseOver: const Color.fromARGB(255, 12, 133, 246),
+    mouseDown: const Color.fromARGB(255, 6, 83, 128),
+    iconMouseOver: const Color.fromARGB(255, 6, 73, 128),
+    iconMouseDown: const Color.fromARGB(255, 0, 102, 255));
 
 final closeButtonColors = WindowButtonColors(
     mouseOver: const Color(0xFFD32F2F),
     mouseDown: const Color(0xFFB71C1C),
-    iconNormal: const Color(0xFF805306),
+    iconNormal: const Color.fromARGB(255, 128, 6, 6),
     iconMouseOver: Colors.white);
 
 // ACTUAL APP SHITE
 
+//class KaevoxApp extends StatelessWidget {
+//  final AdaptiveThemeMode? savedThemeMode;
+//  const KaevoxApp({super.key, this.savedThemeMode});
+//
+//  @override Widget build(BuildContext ctx) {
+//
+//    return AdaptiveTheme(
+//      light: ThemeData.light(
+//        useMaterial3: true,
+//        brightness: Brightness.light,
+//        colorSchemeSeed: Colors.blue,
+//      ),
+//      
+//      dark: ThemeData.dark(
+//        useMaterial3: true,
+//        brightness: Brightness.dark,
+//        colorSchemeSeed:Colors.purple,
+//      ),
+//      
+//      initial: AdaptiveThemeMode.light,
+//      builder: (theme, darkTheme) => MaterialApp(
+//        debugShowCheckedModeBanner: false,
+//        theme: theme,
+//        darkTheme: darkTheme,
+//        home: Scaffold(
+//          body: WindowBorder(
+//            color: borderColor,
+//            width: 1,
+//            child: Row(
+//              children: const [LeftSide(), RightSide()],
+//            )
+//          )
+//        )
+//      )
+//    );
+//  }
+//}
+
 class KaevoxApp extends StatelessWidget {
-  const KaevoxApp({Key? key}) : super(key: key);
-    
+  final AdaptiveThemeMode? savedThemeMode;
+
+  const KaevoxApp({super.key, this.savedThemeMode});
+
   @override
-  Widget build(BuildContext ctx) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: WindowBorder(
-          color: borderColor,
-          width: 1,
-          child: Row(
-            children: const [LeftSide(), RightSide()],
-          )
-        )
-      )
+  Widget build(BuildContext context) {
+    return AdaptiveTheme(
+      light: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorSchemeSeed: Colors.blue,
+      ),
+      dark: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorSchemeSeed: Colors.blue,
+      ),
+      initial: savedThemeMode ?? AdaptiveThemeMode.light,
+      // overrideMode: AdaptiveThemeMode.dark,
+      builder: (theme, darkTheme) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Adaptive Theme Demo',
+        theme: theme,
+        darkTheme: darkTheme,
+        home: const KaevoxHomePage(),
+      ),
+      debugShowFloatingThemeButton: true,
     );
   }
 }
+
 
 
 
@@ -69,7 +122,7 @@ class LeftSide extends StatelessWidget {
     return SizedBox(
       width: 200,
       child: Container(
-        color: sidebarColor,
+        color: Theme.of(ctx).colorScheme.inversePrimary,
         child: Column(
           children: [
             WindowTitleBarBox(child: MoveWindow()),
@@ -90,11 +143,11 @@ class RightSide extends StatelessWidget {
   Widget build(BuildContext ctx) {
     return Expanded(
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [backgroundStartColor, backgroundEndColor],
+            colors: [Theme.of(ctx).colorScheme.surface, Theme.of(ctx).colorScheme.surfaceContainerHigh],
             stops: [0.0, 1.0]
           ),
         ),
@@ -142,15 +195,14 @@ class KaevoxHomePage extends StatelessWidget {
   const KaevoxHomePage({super.key});
 
   @override
-  Widget build(BuildContext ctx) {
-    var appState = ctx.watch<KaevoxState>();
-
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Text('Kaevox boilerplate work'),
-          Text(appState.current)
-        ]
+      body: WindowBorder(
+        color: borderColor,
+        width: 1,
+        child: Row(
+          children: const [LeftSide(), RightSide()],
+        )
       )
     );
   }
