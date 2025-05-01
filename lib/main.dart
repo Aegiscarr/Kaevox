@@ -1,6 +1,9 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:developer';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,9 +18,24 @@ void main() async {
     win.alignment = Alignment.center;
     win.title = "Kaevox";
     win.show();
+    player.play(DeviceFileSource("Z:\\Horizon\\Music\\nty\\Boris Johnson is STILL a Fucking Cunt [O8dF_iSGp1o].mp3"));
     }
   );
 }
+
+const String kvxLogo = 'assets/kvx.svg';
+final player = AudioPlayer();
+
+bool isDarkMode() {
+    final darkMode = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    if (darkMode == Brightness.dark) {
+      log('is dark mode');
+      return true;
+    } else {
+      log('is not dark mode');
+      return false;
+    } 
+  }
 
 // colors
 const borderColor = Color(0xFFFFFFFF);
@@ -39,51 +57,13 @@ final closeButtonColors = WindowButtonColors(
     iconNormal: const Color.fromARGB(255, 128, 6, 6),
     iconMouseOver: Colors.white);
 
-// ACTUAL APP SHITE
-
-//class KaevoxApp extends StatelessWidget {
-//  final AdaptiveThemeMode? savedThemeMode;
-//  const KaevoxApp({super.key, this.savedThemeMode});
-//
-//  @override Widget build(BuildContext ctx) {
-//
-//    return AdaptiveTheme(
-//      light: ThemeData.light(
-//        useMaterial3: true,
-//        brightness: Brightness.light,
-//        colorSchemeSeed: Colors.blue,
-//      ),
-//      
-//      dark: ThemeData.dark(
-//        useMaterial3: true,
-//        brightness: Brightness.dark,
-//        colorSchemeSeed:Colors.purple,
-//      ),
-//      
-//      initial: AdaptiveThemeMode.light,
-//      builder: (theme, darkTheme) => MaterialApp(
-//        debugShowCheckedModeBanner: false,
-//        theme: theme,
-//        darkTheme: darkTheme,
-//        home: Scaffold(
-//          body: WindowBorder(
-//            color: borderColor,
-//            width: 1,
-//            child: Row(
-//              children: const [LeftSide(), RightSide()],
-//            )
-//          )
-//        )
-//      )
-//    );
-//  }
-//}
+// app
 
 class KaevoxApp extends StatelessWidget {
   final AdaptiveThemeMode? savedThemeMode;
 
   const KaevoxApp({super.key, this.savedThemeMode});
-
+  
   @override
   Widget build(BuildContext context) {
     return AdaptiveTheme(
@@ -111,33 +91,30 @@ class KaevoxApp extends StatelessWidget {
   }
 }
 
-
-
-
-class LeftSide extends StatelessWidget {
-  const LeftSide({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext ctx) {
-    return SizedBox(
-      width: 200,
-      child: Container(
-        color: Theme.of(ctx).colorScheme.inversePrimary,
-        child: Column(
-          children: [
-            WindowTitleBarBox(child: MoveWindow()),
-            Expanded(child: Container())
-          ]
-        )
-      )
-    );
-  }
-}
-
-
+//class LeftSide extends StatelessWidget {
+//  const LeftSide({super.key});
+//
+//  @override
+//  Widget build(BuildContext ctx) {
+//    return SizedBox(
+//      width: 200,
+//      child: Container(
+//        color: Theme.of(ctx).colorScheme.inversePrimary,
+//        child: Column(
+//          children: [
+//            kvxAsset,
+//            WindowTitleBarBox(child: MoveWindow()),
+//            Expanded(child: Container()),
+//            
+//          ]
+//        )
+//      )
+//    );
+//  }
+//}
 
 class RightSide extends StatelessWidget {
-  const RightSide({Key? key}) : super(key: key);
+  const RightSide({super.key});
 
   @override
   Widget build(BuildContext ctx) {
@@ -156,6 +133,10 @@ class RightSide extends StatelessWidget {
             WindowTitleBarBox(
               child: Row(
                 children: [
+                  Container(
+                    width: 130,
+                    child: kvxAsset,
+                  ),
                   Expanded(
                     child: MoveWindow(),
                   ),
@@ -170,10 +151,8 @@ class RightSide extends StatelessWidget {
   }
 }
 
-
-
 class WindowButtons extends StatelessWidget {
-  const WindowButtons({Key? key}) : super(key: key);
+  const WindowButtons({super.key});
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -185,7 +164,6 @@ class WindowButtons extends StatelessWidget {
     );
   }
 }
-
 
 class KaevoxState extends ChangeNotifier {
   var current = "Hello World!";
@@ -201,9 +179,15 @@ class KaevoxHomePage extends StatelessWidget {
         color: borderColor,
         width: 1,
         child: Row(
-          children: const [LeftSide(), RightSide()],
+          children: const [RightSide()],
         )
       )
     );
   }
 }
+
+final Widget kvxAsset = SvgPicture.asset(
+  kvxLogo,
+  colorFilter: const ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+  semanticsLabel: 'Kaevox Logo',
+);

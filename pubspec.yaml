@@ -37,6 +37,8 @@ dependencies:
   bitsdojo_window: ^0.1.6
   provider: ^6.1.4
   adaptive_theme: ^3.7.0
+  audioplayers: ^6.4.0
+  flutter_svg: ^2.1.0
 
 dev_dependencies:
   flutter_test:
